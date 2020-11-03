@@ -11,7 +11,7 @@ import (
 	"github.com/tanimutomo/go-grpc-api/cmd/api/adapter/grpc/article"
 )
 
-const PORT = ":50051"
+const port = ":50051"
 
 func main() {
 	fmt.Println("start server")
@@ -21,7 +21,7 @@ func main() {
 }
 
 func set() error {
-	lis, err := net.Listen("tcp", PORT)
+	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		return errors.Wrap(err, "failed to set port")
 	}
