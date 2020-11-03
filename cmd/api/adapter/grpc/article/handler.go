@@ -28,17 +28,20 @@ func (s articleHandler) Get(ctx context.Context, req *pb.GetRequest) (res *pb.Ge
 		return nil, status.Errorf(codes.Internal, "updated_at cannot be parsed to timestamp")
 	}
 
-	res.Article = &pb.ArticleResponse{
-		Id:        art.ID,
-		Title:     art.Title,
-		CreatedAt: cat,
-		UpdatedAt: uat,
+	res = &pb.GetResponse{
+		Article: &pb.ArticleResponse{
+			Id:        art.ID,
+			Title:     art.Title,
+			CreatedAt: cat,
+			UpdatedAt: uat,
+		},
 	}
 	return res, nil
 }
 
 func (s articleHandler) List(ctx context.Context, req *pb.ListRequest) (res *pb.ListResponse, err error) {
 	arts := data.Articles
+	var resArts []*pb.ArticleResponse
 
 	for _, art := range arts {
 		cat, err := ptypes.TimestampProto(art.CreatedAt)
@@ -56,9 +59,12 @@ func (s articleHandler) List(ctx context.Context, req *pb.ListRequest) (res *pb.
 			CreatedAt: cat,
 			UpdatedAt: uat,
 		}
-		res.Articles = append(res.Articles, r)
+		resArts = append(resArts, r)
 	}
 
+	res = &pb.ListResponse{
+		Articles: resArts,
+	}
 	return res, nil
 }
 
@@ -81,11 +87,13 @@ func (s articleHandler) Create(ctx context.Context, req *pb.CreateRequest) (res 
 		return nil, status.Errorf(codes.Internal, "updated_at cannot be parsed to timestamp")
 	}
 
-	res.Article = &pb.ArticleResponse{
-		Id:        art.ID,
-		Title:     art.Title,
-		CreatedAt: cat,
-		UpdatedAt: uat,
+	res = &pb.CreateResponse{
+		Article: &pb.ArticleResponse{
+			Id:        art.ID,
+			Title:     art.Title,
+			CreatedAt: cat,
+			UpdatedAt: uat,
+		},
 	}
 	return res, nil
 }
