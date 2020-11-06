@@ -7,6 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	"github.com/tanimutomo/go-grpc-api/cmd/api/adapter/grpc/article"
 )
@@ -28,6 +29,7 @@ func set() error {
 
 	s := grpc.NewServer()
 	article.SetHandler(s)
+	reflection.Register(s)
 	if err := s.Serve(lis); err != nil {
 		return errors.Wrap(err, "failed to start server")
 	}
