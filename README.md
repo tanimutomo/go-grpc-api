@@ -1,1 +1,1 @@
-# go-grpc-api
+# grpcapi-go-server
