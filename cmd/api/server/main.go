@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/tanimutomo/go-grpc-api/cmd/api/adapter/grpc/article"
+	"github.com/tanimutomo/grpcapi-go-server/cmd/api/adapter/grpc/article"
 )
 
 const port = ":50051"

@@ -8,8 +8,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/tanimutomo/go-grpc-api/pkg/data"
-	pb "github.com/tanimutomo/go-grpc-api/pkg/proto/article"
+	"github.com/tanimutomo/grpcapi-go-server/pkg/data"
+	pb "github.com/tanimutomo/grpcapi-go-server/pkg/proto/article"
 )
 
 type articleHandler struct {

@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 
-	article "github.com/tanimutomo/go-grpc-api/pkg/proto/article"
+	article "github.com/tanimutomo/grpcapi-go-server/pkg/proto/article"
 )
 
 const host = "localhost:50051"
