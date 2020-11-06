@@ -33,15 +33,15 @@ func doArticleRequests() {
 	defer conn.Close()
 	c := article.NewArticleClient(conn)
 
-	if err := articleGetRequest(c, uint64(1)); err != nil {
+	if err := articleGetArticleRequest(c, uint64(1)); err != nil {
 		log.Fatalf("error in Get: %v\n", err)
 		return
 	}
-	if err := articleListRequest(c); err != nil {
+	if err := articleListArticlesRequest(c); err != nil {
 		log.Fatalf("error in List: %v\n", err)
 		return
 	}
-	if err := articleCreateRequest(c, "title"); err != nil {
+	if err := articleCreateArticleRequest(c, "title"); err != nil {
 		log.Fatalf("error in Create: %v\n", err)
 		return
 	}
@@ -49,7 +49,7 @@ func doArticleRequests() {
 	fmt.Println("\nend articles")
 }
 
-func articleGetRequest(client article.ArticleClient, id uint64) error {
+func articleGetArticleRequest(client article.ArticleClient, id uint64) error {
 	fmt.Println("\ndo article/Get")
 
 	ctx, cancel := context.WithTimeout(
@@ -58,7 +58,7 @@ func articleGetRequest(client article.ArticleClient, id uint64) error {
 	)
 	defer cancel()
 
-	req := article.GetRequest{
+	req := article.GetArticleRequest{
 		Id: id,
 	}
 	res, err := client.Get(ctx, &req)
@@ -69,7 +69,7 @@ func articleGetRequest(client article.ArticleClient, id uint64) error {
 	return nil
 }
 
-func articleListRequest(client article.ArticleClient) error {
+func articleListArticlesRequest(client article.ArticleClient) error {
 	fmt.Println("\ndo article/List")
 
 	ctx, cancel := context.WithTimeout(
@@ -78,7 +78,7 @@ func articleListRequest(client article.ArticleClient) error {
 	)
 	defer cancel()
 
-	req := article.ListRequest{}
+	req := article.ListArticlesRequest{}
 	res, err := client.List(ctx, &req)
 	if err != nil {
 		return errors.Wrap(err, "failed to receive response")
@@ -87,7 +87,7 @@ func articleListRequest(client article.ArticleClient) error {
 	return nil
 }
 
-func articleCreateRequest(client article.ArticleClient, title string) error {
+func articleCreateArticleRequest(client article.ArticleClient, title string) error {
 	fmt.Println("\ndo article/Create")
 
 	ctx, cancel := context.WithTimeout(
@@ -96,7 +96,7 @@ func articleCreateRequest(client article.ArticleClient, title string) error {
 	)
 	defer cancel()
 
-	req := article.CreateRequest{
+	req := article.CreateArticleRequest{
 		Title: title,
 	}
 	res, err := client.Create(ctx, &req)

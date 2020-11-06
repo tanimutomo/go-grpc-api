@@ -16,7 +16,7 @@ type articleHandler struct {
 	pb.UnimplementedArticleServiceServer
 }
 
-func (s articleHandler) Get(ctx context.Context, req *pb.GetRequest) (res *pb.GetResponse, err error) {
+func (s articleHandler) GetArticle(ctx context.Context, req *pb.GetArticleRequest) (res *pb.GetArticleResponse, err error) {
 	art := data.Articles[uint64(req.GetId())]
 
 	cat, err := ptypes.TimestampProto(art.CreatedAt)
@@ -28,7 +28,7 @@ func (s articleHandler) Get(ctx context.Context, req *pb.GetRequest) (res *pb.Ge
 		return nil, status.Errorf(codes.Internal, "updated_at cannot be parsed to timestamp")
 	}
 
-	res = &pb.GetResponse{
+	res = &pb.GetArticleResponse{
 		Article: &pb.Article{
 			Id:        art.ID,
 			Title:     art.Title,
@@ -39,7 +39,7 @@ func (s articleHandler) Get(ctx context.Context, req *pb.GetRequest) (res *pb.Ge
 	return res, nil
 }
 
-func (s articleHandler) List(ctx context.Context, req *pb.ListRequest) (res *pb.ListResponse, err error) {
+func (s articleHandler) ListArticles(ctx context.Context, req *pb.ListArticlesRequest) (res *pb.ListArticlesResponse, err error) {
 	arts := data.Articles
 	var resArts []*pb.Article
 
@@ -62,13 +62,13 @@ func (s articleHandler) List(ctx context.Context, req *pb.ListRequest) (res *pb.
 		resArts = append(resArts, r)
 	}
 
-	res = &pb.ListResponse{
+	res = &pb.ListArticlesResponse{
 		Articles: resArts,
 	}
 	return res, nil
 }
 
-func (s articleHandler) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.CreateResponse, err error) {
+func (s articleHandler) CreateArticle(ctx context.Context, req *pb.CreateArticleRequest) (res *pb.CreateArticleResponse, err error) {
 	id := uint64(len(data.Articles) + 1)
 	art := data.Article{
 		ID:        id,
@@ -87,7 +87,7 @@ func (s articleHandler) Create(ctx context.Context, req *pb.CreateRequest) (res 
 		return nil, status.Errorf(codes.Internal, "updated_at cannot be parsed to timestamp")
 	}
 
-	res = &pb.CreateResponse{
+	res = &pb.CreateArticleResponse{
 		Article: &pb.Article{
 			Id:        art.ID,
 			Title:     art.Title,

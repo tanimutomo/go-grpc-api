@@ -17,9 +17,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ArticleServiceClient interface {
-	GetArticle(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	ListArticles(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
-	CreateArticle(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error)
+	ListArticles(ctx context.Context, in *ListArticlesRequest, opts ...grpc.CallOption) (*ListArticlesResponse, error)
+	CreateArticle(ctx context.Context, in *CreateArticleRequest, opts ...grpc.CallOption) (*CreateArticleResponse, error)
 }
 
 type articleServiceClient struct {
@@ -30,8 +30,8 @@ func NewArticleServiceClient(cc grpc.ClientConnInterface) ArticleServiceClient {
 	return &articleServiceClient{cc}
 }
 
-func (c *articleServiceClient) GetArticle(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
-	out := new(GetResponse)
+func (c *articleServiceClient) GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error) {
+	out := new(GetArticleResponse)
 	err := c.cc.Invoke(ctx, "/article.ArticleService/GetArticle", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -39,8 +39,8 @@ func (c *articleServiceClient) GetArticle(ctx context.Context, in *GetRequest, o
 	return out, nil
 }
 
-func (c *articleServiceClient) ListArticles(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
-	out := new(ListResponse)
+func (c *articleServiceClient) ListArticles(ctx context.Context, in *ListArticlesRequest, opts ...grpc.CallOption) (*ListArticlesResponse, error) {
+	out := new(ListArticlesResponse)
 	err := c.cc.Invoke(ctx, "/article.ArticleService/ListArticles", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -48,8 +48,8 @@ func (c *articleServiceClient) ListArticles(ctx context.Context, in *ListRequest
 	return out, nil
 }
 
-func (c *articleServiceClient) CreateArticle(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
-	out := new(CreateResponse)
+func (c *articleServiceClient) CreateArticle(ctx context.Context, in *CreateArticleRequest, opts ...grpc.CallOption) (*CreateArticleResponse, error) {
+	out := new(CreateArticleResponse)
 	err := c.cc.Invoke(ctx, "/article.ArticleService/CreateArticle", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -61,9 +61,9 @@ func (c *articleServiceClient) CreateArticle(ctx context.Context, in *CreateRequ
 // All implementations must embed UnimplementedArticleServiceServer
 // for forward compatibility
 type ArticleServiceServer interface {
-	GetArticle(context.Context, *GetRequest) (*GetResponse, error)
-	ListArticles(context.Context, *ListRequest) (*ListResponse, error)
-	CreateArticle(context.Context, *CreateRequest) (*CreateResponse, error)
+	GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error)
+	ListArticles(context.Context, *ListArticlesRequest) (*ListArticlesResponse, error)
+	CreateArticle(context.Context, *CreateArticleRequest) (*CreateArticleResponse, error)
 	mustEmbedUnimplementedArticleServiceServer()
 }
 
@@ -71,13 +71,13 @@ type ArticleServiceServer interface {
 type UnimplementedArticleServiceServer struct {
 }
 
-func (UnimplementedArticleServiceServer) GetArticle(context.Context, *GetRequest) (*GetResponse, error) {
+func (UnimplementedArticleServiceServer) GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetArticle not implemented")
 }
-func (UnimplementedArticleServiceServer) ListArticles(context.Context, *ListRequest) (*ListResponse, error) {
+func (UnimplementedArticleServiceServer) ListArticles(context.Context, *ListArticlesRequest) (*ListArticlesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListArticles not implemented")
 }
-func (UnimplementedArticleServiceServer) CreateArticle(context.Context, *CreateRequest) (*CreateResponse, error) {
+func (UnimplementedArticleServiceServer) CreateArticle(context.Context, *CreateArticleRequest) (*CreateArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateArticle not implemented")
 }
 func (UnimplementedArticleServiceServer) mustEmbedUnimplementedArticleServiceServer() {}
@@ -94,7 +94,7 @@ func RegisterArticleServiceServer(s grpc.ServiceRegistrar, srv ArticleServiceSer
 }
 
 func _ArticleService_GetArticle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRequest)
+	in := new(GetArticleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -106,13 +106,13 @@ func _ArticleService_GetArticle_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/article.ArticleService/GetArticle",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ArticleServiceServer).GetArticle(ctx, req.(*GetRequest))
+		return srv.(ArticleServiceServer).GetArticle(ctx, req.(*GetArticleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ArticleService_ListArticles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
+	in := new(ListArticlesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -124,13 +124,13 @@ func _ArticleService_ListArticles_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/article.ArticleService/ListArticles",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ArticleServiceServer).ListArticles(ctx, req.(*ListRequest))
+		return srv.(ArticleServiceServer).ListArticles(ctx, req.(*ListArticlesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ArticleService_CreateArticle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+	in := new(CreateArticleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func _ArticleService_CreateArticle_Handler(srv interface{}, ctx context.Context,
 		FullMethod: "/article.ArticleService/CreateArticle",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ArticleServiceServer).CreateArticle(ctx, req.(*CreateRequest))
+		return srv.(ArticleServiceServer).CreateArticle(ctx, req.(*CreateArticleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
