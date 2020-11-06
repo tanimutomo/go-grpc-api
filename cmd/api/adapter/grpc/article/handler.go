@@ -9,11 +9,11 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/tanimutomo/grpcapi-go-server/pkg/data"
-	pb "github.com/tanimutomo/grpcapi-go-server/pkg/proto/article"
+	pb "github.com/tanimutomo/grpcapi-go-server/pkg/grpcs/article"
 )
 
 type articleHandler struct {
-	pb.UnimplementedArticleServer
+	pb.UnimplementedArticleServiceServer
 }
 
 func (s articleHandler) Get(ctx context.Context, req *pb.GetRequest) (res *pb.GetResponse, err error) {
@@ -29,7 +29,7 @@ func (s articleHandler) Get(ctx context.Context, req *pb.GetRequest) (res *pb.Ge
 	}
 
 	res = &pb.GetResponse{
-		Article: &pb.ArticleResponse{
+		Article: &pb.Article{
 			Id:        art.ID,
 			Title:     art.Title,
 			CreatedAt: cat,
@@ -41,7 +41,7 @@ func (s articleHandler) Get(ctx context.Context, req *pb.GetRequest) (res *pb.Ge
 
 func (s articleHandler) List(ctx context.Context, req *pb.ListRequest) (res *pb.ListResponse, err error) {
 	arts := data.Articles
-	var resArts []*pb.ArticleResponse
+	var resArts []*pb.Article
 
 	for _, art := range arts {
 		cat, err := ptypes.TimestampProto(art.CreatedAt)
@@ -53,7 +53,7 @@ func (s articleHandler) List(ctx context.Context, req *pb.ListRequest) (res *pb.
 			return nil, status.Errorf(codes.Internal, "updated_at cannot be parsed to timestamp")
 		}
 
-		r := &pb.ArticleResponse{
+		r := &pb.Article{
 			Id:        art.ID,
 			Title:     art.Title,
 			CreatedAt: cat,
@@ -88,7 +88,7 @@ func (s articleHandler) Create(ctx context.Context, req *pb.CreateRequest) (res 
 	}
 
 	res = &pb.CreateResponse{
-		Article: &pb.ArticleResponse{
+		Article: &pb.Article{
 			Id:        art.ID,
 			Title:     art.Title,
 			CreatedAt: cat,
