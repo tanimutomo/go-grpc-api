@@ -1,4 +1,4 @@
-module github.com/tanimutomo/go-grpc-api
+module github.com/tanimutomo/grpcapi-go-server
 
 go 1.13
 
