@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 
-	article "github.com/tanimutomo/grpcapi-go-server/pkg/proto/article"
+	article "github.com/tanimutomo/grpcapi-go-server/pkg/grpcs/article"
 )
 
 const host = "localhost:50051"
@@ -31,7 +31,7 @@ func doArticleRequests() {
 		return
 	}
 	defer conn.Close()
-	c := article.NewArticleClient(conn)
+	c := article.NewArticleServiceClient(conn)
 
 	if err := articleGetArticleRequest(c, uint64(1)); err != nil {
 		log.Fatalf("error in Get: %v\n", err)
@@ -49,7 +49,7 @@ func doArticleRequests() {
 	fmt.Println("\nend articles")
 }
 
-func articleGetArticleRequest(client article.ArticleClient, id uint64) error {
+func articleGetArticleRequest(client article.ArticleServiceClient, id uint64) error {
 	fmt.Println("\ndo article/Get")
 
 	ctx, cancel := context.WithTimeout(
@@ -61,7 +61,7 @@ func articleGetArticleRequest(client article.ArticleClient, id uint64) error {
 	req := article.GetArticleRequest{
 		Id: id,
 	}
-	res, err := client.Get(ctx, &req)
+	res, err := client.GetArticle(ctx, &req)
 	if err != nil {
 		return errors.Wrap(err, "failed to receive response")
 	}
@@ -69,7 +69,7 @@ func articleGetArticleRequest(client article.ArticleClient, id uint64) error {
 	return nil
 }
 
-func articleListArticlesRequest(client article.ArticleClient) error {
+func articleListArticlesRequest(client article.ArticleServiceClient) error {
 	fmt.Println("\ndo article/List")
 
 	ctx, cancel := context.WithTimeout(
@@ -79,7 +79,7 @@ func articleListArticlesRequest(client article.ArticleClient) error {
 	defer cancel()
 
 	req := article.ListArticlesRequest{}
-	res, err := client.List(ctx, &req)
+	res, err := client.ListArticles(ctx, &req)
 	if err != nil {
 		return errors.Wrap(err, "failed to receive response")
 	}
@@ -87,7 +87,7 @@ func articleListArticlesRequest(client article.ArticleClient) error {
 	return nil
 }
 
-func articleCreateArticleRequest(client article.ArticleClient, title string) error {
+func articleCreateArticleRequest(client article.ArticleServiceClient, title string) error {
 	fmt.Println("\ndo article/Create")
 
 	ctx, cancel := context.WithTimeout(
@@ -99,7 +99,7 @@ func articleCreateArticleRequest(client article.ArticleClient, title string) err
 	req := article.CreateArticleRequest{
 		Title: title,
 	}
-	res, err := client.Create(ctx, &req)
+	res, err := client.CreateArticle(ctx, &req)
 	if err != nil {
 		return errors.Wrap(err, "failed to receive response")
 	}
