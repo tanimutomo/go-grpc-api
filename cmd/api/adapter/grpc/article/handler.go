@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -14,6 +15,10 @@ import (
 
 type articleHandler struct {
 	pb.UnimplementedArticleServiceServer
+}
+
+func SetHandler(s *grpc.Server) {
+	pb.RegisterArticleServiceServer(s, &articleHandler{})
 }
 
 func (s articleHandler) GetArticle(ctx context.Context, req *pb.GetArticleRequest) (res *pb.GetArticleResponse, err error) {
