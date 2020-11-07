@@ -13,15 +13,15 @@ import (
 	pb "github.com/tanimutomo/grpcapi-go-server/pkg/grpcs/article"
 )
 
-type articleHandler struct {
+type handler struct {
 	pb.UnimplementedArticleServiceServer
 }
 
 func SetHandler(s *grpc.Server) {
-	pb.RegisterArticleServiceServer(s, &articleHandler{})
+	pb.RegisterArticleServiceServer(s, &handler{})
 }
 
-func (s articleHandler) GetArticle(ctx context.Context, req *pb.GetArticleRequest) (res *pb.GetArticleResponse, err error) {
+func (s handler) GetArticle(ctx context.Context, req *pb.GetArticleRequest) (res *pb.GetArticleResponse, err error) {
 	art := data.Articles[uint64(req.GetId())]
 
 	cat, err := ptypes.TimestampProto(art.CreatedAt)
@@ -44,7 +44,7 @@ func (s articleHandler) GetArticle(ctx context.Context, req *pb.GetArticleReques
 	return res, nil
 }
 
-func (s articleHandler) ListArticles(ctx context.Context, req *pb.ListArticlesRequest) (res *pb.ListArticlesResponse, err error) {
+func (s handler) ListArticles(ctx context.Context, req *pb.ListArticlesRequest) (res *pb.ListArticlesResponse, err error) {
 	arts := data.Articles
 	var resArts []*pb.Article
 
@@ -73,7 +73,7 @@ func (s articleHandler) ListArticles(ctx context.Context, req *pb.ListArticlesRe
 	return res, nil
 }
 
-func (s articleHandler) CreateArticle(ctx context.Context, req *pb.CreateArticleRequest) (res *pb.CreateArticleResponse, err error) {
+func (s handler) CreateArticle(ctx context.Context, req *pb.CreateArticleRequest) (res *pb.CreateArticleResponse, err error) {
 	id := uint64(len(data.Articles) + 1)
 	art := data.Article{
 		ID:        id,
