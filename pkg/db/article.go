@@ -1,16 +1,9 @@
-package data
+package db
 
 import (
 	"errors"
 	"time"
 )
-
-type Article struct {
-	ID        uint64
-	Title     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
 
 var articles = map[uint64]Article{
 	uint64(1): {
@@ -33,13 +26,26 @@ var articles = map[uint64]Article{
 	},
 }
 
-type ArticleHandler struct{}
-
-func NewArticleHandler() ArticleHandler {
-	return ArticleHandler{}
+type Article struct {
+	ID        uint64
+	Title     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
-func (h ArticleHandler) Find(id uint64) (a Article, err error) {
+type ArticleHandler interface {
+	Find(id uint64) (a Article, err error)
+	FindAll() (as []Article, err error)
+	Create(inp Article) (out Article, err error)
+}
+
+type articleHandler struct{}
+
+func NewArticleHandler() articleHandler {
+	return articleHandler{}
+}
+
+func (h articleHandler) Find(id uint64) (a Article, err error) {
 	a, ok := articles[id]
 	if !ok {
 		return a, errors.New("not found")
@@ -47,14 +53,14 @@ func (h ArticleHandler) Find(id uint64) (a Article, err error) {
 	return a, nil
 }
 
-func (h ArticleHandler) FindAll() (as []Article, err error) {
+func (h articleHandler) FindAll() (as []Article, err error) {
 	for _, a := range articles {
 		as = append(as, a)
 	}
 	return as, nil
 }
 
-func (h ArticleHandler) Create(inp Article) (out Article, err error) {
+func (h articleHandler) Create(inp Article) (out Article, err error) {
 	id := uint64(len(articles) + 1)
 	out = Article{
 		ID:        id,
