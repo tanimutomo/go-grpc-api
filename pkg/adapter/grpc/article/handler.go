@@ -2,27 +2,33 @@ package article
 
 import (
 	"context"
-	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/tanimutomo/grpcapi-go-server/pkg/data"
+	"github.com/tanimutomo/grpcapi-go-server/pkg/db"
 	pb "github.com/tanimutomo/grpcapi-go-server/pkg/grpcs/article"
 )
 
 type handler struct {
+	articleDB db.ArticleHandler
 	pb.UnimplementedArticleServiceServer
 }
 
 func SetHandler(s *grpc.Server) {
-	pb.RegisterArticleServiceServer(s, &handler{})
+	h := &handler{
+		articleDB: db.NewArticleHandler(),
+	}
+	pb.RegisterArticleServiceServer(s, h)
 }
 
 func (s handler) GetArticle(ctx context.Context, req *pb.GetArticleRequest) (res *pb.GetArticleResponse, err error) {
-	art := data.Articles[uint64(req.GetId())]
+	art, err := s.articleDB.Find(uint64(req.GetId()))
+	if err != nil {
+		return res, status.Errorf(codes.NotFound, err.Error())
+	}
 
 	cat, err := ptypes.TimestampProto(art.CreatedAt)
 	if err != nil {
@@ -45,7 +51,7 @@ func (s handler) GetArticle(ctx context.Context, req *pb.GetArticleRequest) (res
 }
 
 func (s handler) ListArticles(ctx context.Context, req *pb.ListArticlesRequest) (res *pb.ListArticlesResponse, err error) {
-	arts := data.Articles
+	arts, _ := s.articleDB.FindAll()
 	var resArts []*pb.Article
 
 	for _, art := range arts {
@@ -74,14 +80,10 @@ func (s handler) ListArticles(ctx context.Context, req *pb.ListArticlesRequest) 
 }
 
 func (s handler) CreateArticle(ctx context.Context, req *pb.CreateArticleRequest) (res *pb.CreateArticleResponse, err error) {
-	id := uint64(len(data.Articles) + 1)
-	art := data.Article{
-		ID:        id,
-		Title:     req.GetTitle(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	art := db.Article{
+		Title: req.GetTitle(),
 	}
-	data.Articles[id] = art
+	art, _ = s.articleDB.Create(art)
 
 	cat, err := ptypes.TimestampProto(art.CreatedAt)
 	if err != nil {
