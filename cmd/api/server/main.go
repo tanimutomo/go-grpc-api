@@ -23,7 +23,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/tanimutomo/grpcapi-go-server/cmd/api/adapter/grpc/article"
+	"github.com/tanimutomo/grpcapi-go-server/pkg/adapter/grpc/article"
 )
 
 const serviceName = "grpcapi-go-server"
