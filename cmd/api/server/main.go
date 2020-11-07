@@ -10,27 +10,18 @@ import (
 	"syscall"
 	"time"
 
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
-	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/namsral/flag"
-	"github.com/pkg/errors"
-	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 
-	"github.com/tanimutomo/grpcapi-go-server/pkg/adapter/grpc/article"
+	"github.com/tanimutomo/grpcapi-go-server/pkg/server"
 )
 
 const serviceName = "grpcapi-go-server"
 
 var (
-	port   = flag.Int("grpcPort", 50051, "grpc port")
-	server *grpc.Server
+	port = flag.Int("grpcPort", 50051, "grpc port")
+	gs   *grpc.Server
 )
 
 func main() {
@@ -56,7 +47,7 @@ func main() {
 			os.Exit(2)
 		}
 
-		server, err = initServer()
+		gs, err = server.InitGrpcServer()
 		if err != nil {
 			log.Fatal(err)
 			os.Exit(2)
@@ -64,7 +55,7 @@ func main() {
 
 		log.Printf("gRPC server serving at %s\n", addr)
 
-		return server.Serve(ln)
+		return gs.Serve(ln)
 	})
 
 	select {
@@ -81,9 +72,9 @@ func main() {
 	_, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdownCancel()
 
-	if server != nil {
+	if gs != nil {
 		log.Println("graceful stop server")
-		server.GracefulStop()
+		gs.GracefulStop()
 	}
 	err := g.Wait()
 	if err != nil {
@@ -92,25 +83,4 @@ func main() {
 	}
 
 	log.Println("all processes are finished")
-}
-
-func initServer() (s *grpc.Server, err error) {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		return s, errors.New("failed to create zap logger")
-	}
-	s = grpc.NewServer(
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-			grpc_ctxtags.UnaryServerInterceptor(),
-			grpc_opentracing.UnaryServerInterceptor(),
-			grpc_prometheus.UnaryServerInterceptor,
-			grpc_zap.UnaryServerInterceptor(logger),
-			grpc_recovery.UnaryServerInterceptor(),
-		)),
-	)
-	reflection.Register(s)
-
-	article.SetHandler(s)
-
-	return s, nil
 }
